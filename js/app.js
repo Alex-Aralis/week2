@@ -25,7 +25,7 @@ MutantCorp.prototype = {
 
     requestMutant: function(mutant){
         $.ajax({
-            url: this.url + mutant,
+            url: this.url + ( mutant.id ? mutant.id : mutant ),
             type: "GET",
         })
         .done(function(data){
@@ -41,7 +41,7 @@ MutantCorp.prototype = {
     proposeMutant: function(props){
         $.ajax({
             url: this.url,
-            type: "POSE",
+            type: "POST",
             headers:{
                 "Content-Type":"application/json",
             },
@@ -50,9 +50,44 @@ MutantCorp.prototype = {
         }).done(function(data,textStatus, jqXHR){
             console.log('proposed mutant accepted: ' + jqXHR.status);
             console.log(data);
-        }).fail(function(data,textStatus, jqXHR){
-            console.log('proposed mutant rejected: ' + jqXHR.status);
+        }).fail(function(jqXHR,textStatus, errorThrown){
+            console.log('proposed mutant rejected: ' + errorThrown);
         });
+    },
+
+    protestMutant: function(id){
+        $.ajax({
+            url: this.url + ( id.id ? id.id : id ),
+            type: "DELETE",
+        })
+        .done(function(data){
+            console.log("mutant expelled");
+            console.log(data);
+        })
+        .fail(function(jqXHR, textStatus, errorThrown){
+            console.log("mutant retained: " + errorThrown);
+            console.log(errorThown);
+        });
+    },
+
+    entreatMutant: function(id, term){
+        jQuery.ajax({
+            url: url + mutant.id,
+            type: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            contentType: "application/json",
+            data: JSON.stringify({"term": term,}),
+        })
+        .done(function(data, textStatus, jqXHR) {
+            console.log("Mutant influanced: " + jqXHR.status);
+            console.log(data);
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("Mutant defied");
+            console.log(errorThrown);
+        })
     },
 };
 
