@@ -70,24 +70,24 @@ MutantCorp.prototype = {
         });
     },
 
-    entreatMutant: function(id, term){
+    entreatMutant: function(mutant){
+        var id = mutant.id;
+
         jQuery.ajax({
-            url: url + mutant.id,
+            url: this.url + id,
             type: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: {"Content-Type": "application/json",},
             contentType: "application/json",
-            data: JSON.stringify({"term": term,}),
+            data: JSON.stringify({"mutant": mutant}),
         })
         .done(function(data, textStatus, jqXHR) {
-            console.log("Mutant influanced: " + jqXHR.status);
+            console.log("mutant influenced: " + jqXHR.status);
             console.log(data);
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("Mutant defied");
+            console.log("mutant defiant");
             console.log(errorThrown);
-        })
+        });
     },
 };
 
