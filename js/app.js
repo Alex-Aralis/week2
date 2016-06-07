@@ -1,6 +1,6 @@
 $(document).foundation()
 
-MutantCorp = function(url){
+var MutantCorp = function(url){
     if (!/^.*\/$/.test(url)) url += '/';
 
     this.url = url;
@@ -91,5 +91,85 @@ MutantCorp.prototype = {
     },
 };
 
-m = new MutantCorp('https://mutant-school.herokuapp.com/api/v1/mutants');
-  
+
+var m = new MutantCorp('https://mutant-school.herokuapp.com/api/v1/mutants');
+
+var App = function(){
+    A = {
+        init: function(MC){
+            A.MC = MC;
+
+            A.form = $('form');
+            A.submitButton = $('form button');
+            A.field = $('form input');
+
+            A.form.on('submit', A.submitHandler);
+        },
+
+        cloneli: function(){
+            //var li = document.querySelector('#li_template');
+            var li = $('li').clone();
+             
+            //li.removeAttribute('id');
+            li.removeAttr('id');
+
+            return li;
+        }, 
+    
+        prependli(li){
+            //return document.querySelector('ul').appendChild(li);
+            return $('ul').prepend(li);
+        }, 
+
+        createli(str){
+            var li = A.cloneli();
+
+            li.find('span').text(str);
+
+/*
+            li.innerText = str;
+
+            li.querySelector('.delete-button')  
+                .onclick = A.deleteButtonHandler;
+            li.querySelector('.update-button')
+                .onclick = A.updateButtonHandler;
+*/
+
+            li.find('.delete-button')
+                .on('click', A.deleteButtonHandler);
+
+            li.find('.update-button')
+                .on('click', A.updateButtonHandler);
+
+/*
+            document.querySelector('ul')
+                .appendChild(
+                    document
+                    .querySelector('#li_template')
+                    .cloneNode(true)
+                );
+*/
+
+            return li;
+        },
+
+        deleteButtonHandler: function(ev){},
+        updateButtonHandler: function(ev){},
+
+        submitHandler: function(ev){
+            ev.preventDefault();
+
+            A.prependli(A.createli(ev.currentTarget.field.value));
+
+            A.clearSubmitField();
+        },
+
+        clearSubmitField(){
+            A.field.val('');
+        },
+    };
+
+    return A;
+}()  
+
+App.init(m);

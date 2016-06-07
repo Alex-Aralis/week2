@@ -10,25 +10,24 @@
   </head>
   <body>
     <div class='row'>
-            <div class='medium-9 medium-offset-1 columns flex-container bottom-spacer top-spacer'>        
-                <form class='flex-item flex-container flex-center'>
-                    <div class='medium-8 columns no-padding big-flex-item'>
-                        <input type='text' class='fill-in no-margin'></input>
-                    </div>
-                    <div class='medium-4 columns no-padding flex-item'>
-                        <button type='submit' class='button no-margin fill-in'>Add Mutant</button>
-                    </div>
-                </form>
+        <div class='medium-9 medium-offset-1 columns flex-container bottom-spacer top-spacer'>        
+            <form class='flex-item flex-container flex-center'>
+                <div class='medium-8 columns no-padding big-flex-item'>
+                    <input type='text' class='fill-in no-margin' name='field'>
+                </div>
+                <div class='medium-4 columns no-padding flex-item'>
+                    <button type='submit' name='button' class='button no-margin fill-in'>Add Mutant</button>
+                </div>
+            </form>
         </div>
         <div class='row'>
             <div class='medium-9 medium-offset-2 columns big-padding'>
                 <ul class='no-bullet border-top'>
                     <li class='no-bullet border-bucket padding autoheight flex-container' id='li_template'>
-                        <span class='flex-item text-spacing overflow-hidden' contenteditable='false'>template
-                        </span>
+                        <span class='flex-item text-spacing overflow-hidden' contenteditable='false'>template</span>
                         <div class='spectral flex-container'>
-                            <a class='button'>update</a>
-                            <a class='button alert'>delete</a>
+                            <a class='button update-button'>update</a>
+                            <a class='button alert delete-button'>delete</a>
                         </div>
                     </li>
                 </ul>
