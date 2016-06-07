@@ -107,17 +107,14 @@ var App = function(){
         },
 
         cloneli: function(){
-            //var li = document.querySelector('#li_template');
-            var li = $('li').clone();
+            var li = $('#li_template').clone();
              
-            //li.removeAttribute('id');
             li.removeAttr('id');
 
             return li;
         }, 
     
         prependli(li){
-            //return document.querySelector('ul').appendChild(li);
             return $('ul').prepend(li);
         }, 
 
@@ -126,29 +123,11 @@ var App = function(){
 
             li.find('span').text(str);
 
-/*
-            li.innerText = str;
-
-            li.querySelector('.delete-button')  
-                .onclick = A.deleteButtonHandler;
-            li.querySelector('.update-button')
-                .onclick = A.updateButtonHandler;
-*/
-
             li.find('.delete-button')
                 .on('click', A.deleteButtonHandler);
 
             li.find('.update-button')
                 .on('click', A.updateButtonHandler);
-
-/*
-            document.querySelector('ul')
-                .appendChild(
-                    document
-                    .querySelector('#li_template')
-                    .cloneNode(true)
-                );
-*/
 
             return li;
         },
