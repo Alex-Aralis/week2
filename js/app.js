@@ -38,7 +38,7 @@ MutantCorp.prototype = {
         });
     },
 
-    proposeMutant: function(props){
+    proposeMutant: function(mutant){
         $.ajax({
             url: this.url,
             type: "POST",
@@ -46,7 +46,7 @@ MutantCorp.prototype = {
                 "Content-Type":"application/json",
             },
             contentType: "application/json",
-            data: JSON.stringify({mutant:props,}),
+            data: JSON.stringify({mutant:mutant,}),
         }).done(function(data,textStatus, jqXHR){
             console.log('proposed mutant accepted: ' + jqXHR.status);
             console.log(data);
@@ -55,9 +55,9 @@ MutantCorp.prototype = {
         });
     },
 
-    protestMutant: function(id){
+    protestMutant: function(mutant){
         $.ajax({
-            url: this.url + ( id.id ? id.id : id ),
+            url: this.url + ( mutant.id ? mutant.id : mutant ),
             type: "DELETE",
         })
         .done(function(data){
