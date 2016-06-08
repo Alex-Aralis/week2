@@ -35,7 +35,7 @@ MutantCorp.prototype = {
         });
     },
 
-    proposeMutant: function(mutant){
+    proposeMutant: function(mutant, func){
         $.ajax({
             url: this.url,
             type: "POST",
@@ -44,10 +44,8 @@ MutantCorp.prototype = {
             },
             contentType: "application/json",
             data: JSON.stringify({mutant:mutant,}),
-        }).done(function(data,textStatus, jqXHR){
-            console.log('proposed mutant accepted: ' + jqXHR.status);
-            console.log(data);
-        }).fail(function(jqXHR,textStatus, errorThrown){
+        }).done(func).fail(
+            function(jqXHR,textStatus, errorThrown){
             console.log('proposed mutant rejected: ' + errorThrown);
         });
     },
@@ -153,7 +151,18 @@ var App = function(){
         submitHandler: function(ev){
             ev.preventDefault();
 
-            A.prependli(A.createli(ev.currentTarget.field.value));
+            var str = ev.currentTarget.field.value;
+
+            var mutant = {
+                mutant_name: str,
+                power: str,
+                real_name: str,
+                power: str,
+            }
+
+            A.MC.proposeMutant(mutant, function(){
+                A.prependli(A.createli(str));
+            }); 
 
             A.clearSubmitField();
         },
