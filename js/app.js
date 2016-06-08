@@ -9,7 +9,7 @@ var MutantCorp = function(url){
 
 MutantCorp.prototype = {
     requestMutants: function(func){
-        $.ajax({
+        return $.ajax({
             url:this.url,
             type: "GET",
         })
@@ -20,15 +20,12 @@ MutantCorp.prototype = {
         });
     },
 
-    requestMutant: function(mutant){
-        $.ajax({
+    requestMutant: function(mutant, func){
+        return $.ajax({
             url: this.url + ( mutant.id ? mutant.id : mutant ),
             type: "GET",
         })
-        .done(function(data){
-            this.mutant = data;
-            console.log('mutant recieved');
-        }.bind(this))
+        .done(func)
         .fail(function(jqXHR, textStatus, errorThrown){
             console.log('mutant not recieved');
             console.log(errorThrown);
@@ -36,7 +33,7 @@ MutantCorp.prototype = {
     },
 
     proposeMutant: function(mutant, func){
-        $.ajax({
+        return $.ajax({
             url: this.url,
             type: "POST",
             headers:{
@@ -51,7 +48,7 @@ MutantCorp.prototype = {
     },
 
     protestMutant: function(mutant, func){
-        $.ajax({
+        return $.ajax({
             url: this.url + ( mutant.id ? mutant.id : mutant ),
             type: "DELETE",
         })
@@ -65,7 +62,7 @@ MutantCorp.prototype = {
     entreatMutant: function(mutant, func){
         var id = mutant.id;
 
-        jQuery.ajax({
+        return jQuery.ajax({
             url: this.url + id,
             type: "PUT",
             headers: {"Content-Type": "application/json",},
@@ -167,6 +164,18 @@ var App = function(){
                     span.attr('contenteditable', 'false');
                     A.setli(li, mutant);
                 });
+            }else if(ev.keyCode === 27){
+                ev.preventDefault();
+
+                var li = $(ev.currentTarget).closest('li');
+                var span = $(ev.currentTarget);
+                var str = span.text();
+
+                span.attr('contenteditable', 'false');
+                
+                A.MC.requestMutant(li.data('id'), function(mutant){
+                    A.setli(li, mutant);
+                });
             }
         },
         
@@ -188,7 +197,6 @@ var App = function(){
             span.on('keydown', A.updateSpanKeyupHandler);
 
             span.focus()
-
             A.selectElementContents(span.get(0));
         },
 
