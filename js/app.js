@@ -50,22 +50,19 @@ MutantCorp.prototype = {
         });
     },
 
-    protestMutant: function(mutant){
+    protestMutant: function(mutant, func){
         $.ajax({
             url: this.url + ( mutant.id ? mutant.id : mutant ),
             type: "DELETE",
         })
-        .done(function(data){
-            console.log("mutant expelled");
-            console.log(data);
-        })
+        .done(func)
         .fail(function(jqXHR, textStatus, errorThrown){
             console.log("mutant retained: " + errorThrown);
             console.log(errorThown);
         });
     },
 
-    entreatMutant: function(mutant){
+    entreatMutant: function(mutant, func){
         var id = mutant.id;
 
         jQuery.ajax({
@@ -75,10 +72,7 @@ MutantCorp.prototype = {
             contentType: "application/json",
             data: JSON.stringify({"mutant": mutant}),
         })
-        .done(function(data, textStatus, jqXHR) {
-            console.log("mutant influenced: " + jqXHR.status);
-            console.log(data);
-        })
+        .done(func)
         .fail(function(jqXHR, textStatus, errorThrown) {
             console.log("mutant defiant");
             console.log(errorThrown);
@@ -105,9 +99,8 @@ var App = function(){
 
         loadMutants: function(mutants){
             $.each(mutants, function(i, mutant){
-                var li = A.createli(mutant.mutant_name);
+                var li = A.createli(mutant);
 
-                li.data('id', mutant.id);
                 A.prependli(li);
             });
         
@@ -126,10 +119,16 @@ var App = function(){
             return $('ul').prepend(li);
         }, 
 
-        createli(str){
+        createli(mutant){
             var li = A.cloneli();
 
-            li.find('span').text(str);
+            A.setli(li, mutant);            
+
+            return li;
+        },
+
+        setli(li, mutant){
+            li.find('span').text(mutant.mutant_name + ' (' + mutant.real_name + ') ' + mutant.power);
 
             li.find('.delete-button')
                 .on('click', A.deleteButtonHandler);
@@ -137,16 +136,61 @@ var App = function(){
             li.find('.update-button')
                 .on('click', A.updateButtonHandler);
 
+            li.data('id', mutant.id);
+
             return li;
-        },
+        }, 
 
         deleteButtonHandler: function(ev){
             var li = $(ev.currentTarget).closest('li');
-            A.MC.protestMutant(li.data('id'));
 
-            li.remove();
+            A.MC.protestMutant(li.data('id'), function(){
+                li.remove();
+            });
+
         },
-        updateButtonHandler: function(ev){},
+        
+        updateSpanKeyupHandler: function(ev){
+            if(ev.keyCode === 13){
+                ev.preventDefault();
+
+                var li = $(ev.currentTarget).closest('li');
+                var span = $(ev.currentTarget);
+                var str = span.text();
+
+                var mutant = {
+                    mutant_name: str,
+                    id: li.data('id'),
+                };
+
+                A.MC.entreatMutant(mutant, function(mutant){
+                    span.attr('contenteditable', 'false');
+                    A.setli(li, mutant);
+                });
+            }
+        },
+        
+        selectElementContents: function(el) {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        },
+
+        updateButtonHandler: function(ev){
+            var li = $(ev.currentTarget).closest('li');
+            var span = li.find('span');
+
+            span.attr('contenteditable', 'true');
+
+            span.on('keyup', A.updateSpanKeyupHandler);
+            span.on('keydown', A.updateSpanKeyupHandler);
+
+            span.focus()
+
+            A.selectElementContents(span.get(0));
+        },
 
         submitHandler: function(ev){
             ev.preventDefault();
@@ -160,8 +204,8 @@ var App = function(){
                 power: str,
             }
 
-            A.MC.proposeMutant(mutant, function(){
-                A.prependli(A.createli(str));
+            A.MC.proposeMutant(mutant, function(mutant){
+                A.prependli(A.createli(mutant));
             }); 
 
             A.clearSubmitField();
