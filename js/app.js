@@ -8,31 +8,29 @@ var MutantCorp = function(url){
 };
 
 MutantCorp.prototype = {
-    requestMutants: function(func){
+    requestMutants: function(){
         return $.ajax({
             url:this.url,
             type: "GET",
         })
-        .done(func)
         .fail(function(jqXHR, textStatus, errorThrown){
             console.log('mutants not recieved');
             console.log(errorThrown);
         });
     },
 
-    requestMutant: function(mutant, func){
+    requestMutant: function(mutant){
         return $.ajax({
             url: this.url + ( mutant.id ? mutant.id : mutant ),
             type: "GET",
         })
-        .done(func)
         .fail(function(jqXHR, textStatus, errorThrown){
             console.log('mutant not recieved');
             console.log(errorThrown);
         });
     },
 
-    proposeMutant: function(mutant, func){
+    proposeMutant: function(mutant){
         return $.ajax({
             url: this.url,
             type: "POST",
@@ -41,25 +39,25 @@ MutantCorp.prototype = {
             },
             contentType: "application/json",
             data: JSON.stringify({mutant:mutant,}),
-        }).done(func).fail(
+        })
+        .fail(
             function(jqXHR,textStatus, errorThrown){
             console.log('proposed mutant rejected: ' + errorThrown);
         });
     },
 
-    protestMutant: function(mutant, func){
+    protestMutant: function(mutant){
         return $.ajax({
             url: this.url + ( mutant.id ? mutant.id : mutant ),
             type: "DELETE",
         })
-        .done(func)
         .fail(function(jqXHR, textStatus, errorThrown){
             console.log("mutant retained: " + errorThrown);
             console.log(errorThown);
         });
     },
 
-    entreatMutant: function(mutant, func){
+    entreatMutant: function(mutant){
         var id = mutant.id;
 
         return jQuery.ajax({
@@ -69,7 +67,6 @@ MutantCorp.prototype = {
             contentType: "application/json",
             data: JSON.stringify({"mutant": mutant}),
         })
-        .done(func)
         .fail(function(jqXHR, textStatus, errorThrown) {
             console.log("mutant defiant");
             console.log(errorThrown);
@@ -108,7 +105,7 @@ var App = function(){
                 'span[contenteditable=true]',
                 A.updateSpanKeyHandler)
 
-            A.MC.requestMutants(A.loadMutants);
+            A.MC.requestMutants().done(A.loadMutants);
         },
 
         loadMutants: function(mutants){
@@ -154,10 +151,10 @@ var App = function(){
         deleteButtonHandler: function(ev){
             var li = $(ev.currentTarget).closest('li');
 
-            A.MC.protestMutant(li.data('id'), function(){
-                li.remove();
-            });
-
+            A.MC.protestMutant(li.data('id'))
+                .done(function(){
+                    li.remove();
+                });
         },
 
         updateSubmitHandler: function(ev){
@@ -176,10 +173,11 @@ var App = function(){
                 id: li.data('id'),
             };
 
-            A.MC.entreatMutant(mutant, function(mutant){
-                span.attr('contenteditable', 'false');
-                A.setli(li, mutant);
-            });
+            A.MC.entreatMutant(mutant)
+                .done(function(mutant){
+                    span.attr('contenteditable', 'false');
+                    A.setli(li, mutant);
+                });
         },
         
         updateSpanKeyHandler: function(ev){
@@ -197,9 +195,10 @@ var App = function(){
 
                 span.attr('contenteditable', 'false');
                 
-                A.MC.requestMutant(li.data('id'), function(mutant){
-                    A.setli(li, mutant);
-                });
+                A.MC.requestMutant(li.data('id'))
+                    .done(function(mutant){
+                        A.setli(li, mutant);
+                    });
             }
         },
         
@@ -238,9 +237,10 @@ var App = function(){
                 power: str,
             }
 
-            A.MC.proposeMutant(mutant, function(mutant){
-                A.prependli(A.createli(mutant));
-            }); 
+            A.MC.proposeMutant(mutant)
+                .done(function(mutant){
+                    A.prependli(A.createli(mutant));
+                }); 
 
             A.clearSubmitField();
         },
