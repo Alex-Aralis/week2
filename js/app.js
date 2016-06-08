@@ -8,15 +8,12 @@ var MutantCorp = function(url){
 };
 
 MutantCorp.prototype = {
-    requestMutants: function(){
+    requestMutants: function(func){
         $.ajax({
             url:this.url,
             type: "GET",
         })
-        .done(function(data){
-            this.mutants = data;
-            console.log('mutants recieved');
-        }.bind(this))
+        .done(func)
         .fail(function(jqXHR, textStatus, errorThrown){
             console.log('mutants not recieved');
             console.log(errorThrown);
@@ -104,6 +101,19 @@ var App = function(){
             A.field = $('form input');
 
             A.form.on('submit', A.submitHandler);
+
+            A.MC.requestMutants(A.loadMutants);
+        },
+
+        loadMutants: function(mutants){
+            $.each(mutants, function(i, mutant){
+                var li = A.createli(mutant.mutant_name);
+
+                li.data('id', mutant.id);
+                A.prependli(li);
+            });
+        
+            return mutants;
         },
 
         cloneli: function(){
@@ -132,7 +142,12 @@ var App = function(){
             return li;
         },
 
-        deleteButtonHandler: function(ev){},
+        deleteButtonHandler: function(ev){
+            var li = $(ev.currentTarget).closest('li');
+            A.MC.protestMutant(li.data('id'));
+
+            li.remove();
+        },
         updateButtonHandler: function(ev){},
 
         submitHandler: function(ev){
