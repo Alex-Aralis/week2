@@ -88,8 +88,25 @@ var App = function(){
             A.form = $('form');
             A.submitButton = $('form button');
             A.field = $('form input');
+            A.ul = $('ul');
 
             A.form.on('submit', A.submitHandler);
+
+            A.ul.on('click', 
+                'span[contenteditable=false] ~ div .update-button', 
+                A.updateButtonHandler);
+
+            A.ul.on('click', 
+                'span[contenteditable=true] ~ div .update-button', 
+                A.updateSubmitHandler);
+
+            A.ul.on('click', 
+                '.delete-button',
+                A.deleteButtonHandler);
+
+            A.ul.on('keydown',
+                'span[contenteditable=true]',
+                A.updateSpanKeyHandler)
 
             A.MC.requestMutants(A.loadMutants);
         },
@@ -127,11 +144,7 @@ var App = function(){
         setli(li, mutant){
             li.find('span').text(mutant.mutant_name + ' (' + mutant.real_name + ') ' + mutant.power);
 
-            li.find('.delete-button')
-                .on('click', A.deleteButtonHandler);
 
-            li.find('.update-button')
-                .on('click', A.updateButtonHandler);
 
             li.data('id', mutant.id);
 
@@ -146,24 +159,35 @@ var App = function(){
             });
 
         },
+
+        updateSubmitHandler: function(ev){
+            var li = $(ev.currentTarget).closest('li');
+            var span = li.find('span');
+            var str = span.text();
+
+            console.log(str);
+
+            if(!str){
+                return;
+            }
+
+            var mutant = {
+                mutant_name: str,
+                id: li.data('id'),
+            };
+
+            A.MC.entreatMutant(mutant, function(mutant){
+                span.attr('contenteditable', 'false');
+                A.setli(li, mutant);
+            });
+        },
         
-        updateSpanKeyupHandler: function(ev){
+        updateSpanKeyHandler: function(ev){
             if(ev.keyCode === 13){
                 ev.preventDefault();
+            
+                A.updateSubmitHandler(ev);
 
-                var li = $(ev.currentTarget).closest('li');
-                var span = $(ev.currentTarget);
-                var str = span.text();
-
-                var mutant = {
-                    mutant_name: str,
-                    id: li.data('id'),
-                };
-
-                A.MC.entreatMutant(mutant, function(mutant){
-                    span.attr('contenteditable', 'false');
-                    A.setli(li, mutant);
-                });
             }else if(ev.keyCode === 27){
                 ev.preventDefault();
 
@@ -193,8 +217,7 @@ var App = function(){
 
             span.attr('contenteditable', 'true');
 
-            span.on('keyup', A.updateSpanKeyupHandler);
-            span.on('keydown', A.updateSpanKeyupHandler);
+            console.log(span);
 
             span.focus()
             A.selectElementContents(span.get(0));
@@ -202,8 +225,11 @@ var App = function(){
 
         submitHandler: function(ev){
             ev.preventDefault();
-
             var str = ev.currentTarget.field.value;
+
+            if(!str){
+                return;
+            }
 
             var mutant = {
                 mutant_name: str,

@@ -76,6 +76,12 @@ span:focus ~ .spectral:hover{
     opacity:1;
 }
 
+span[contenteditable=true]{
+    background:aliceblue;
+    transition-property:background-color;
+    transition-duration:.3s;
+}
+
 .no-padding{
     padding:0;
 }
@@ -108,3 +114,24 @@ span:focus ~ .spectral:hover{
 #li_template{
     display:none;
 }
+
+.no-select{
+    -webkit-user-select: none;
+}
+
+.clickable{
+    background-color: transparent;
+    transition-property: background-color;
+    transition-duration: 0.3s;
+}
+
+.clickable:hover{
+    background-color: lightyellow;
+}
+
+.force-break-word{
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+}
+
+
